@@ -10,37 +10,64 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import com.google.gson.annotations.Expose;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Smit
+ */
 @Entity
 @Table(name = "comment_history")
+@XmlRootElement
+@NamedQueries({
+        @NamedQuery(name = "CommentHistory.findAll", query = "SELECT c FROM CommentHistory c"),
+        @NamedQuery(name = "CommentHistory.findByCommentId", query = "SELECT c FROM CommentHistory c WHERE c.commentId = :commentId"),
+        @NamedQuery(name = "CommentHistory.findByFilepath", query = "SELECT c FROM CommentHistory c WHERE c.filepath = :filepath"),
+        @NamedQuery(name = "CommentHistory.findByCommentsDetail", query = "SELECT c FROM CommentHistory c WHERE c.commentsDetail = :commentsDetail"),
+        @NamedQuery(name = "CommentHistory.findByCommentDate", query = "SELECT c FROM CommentHistory c WHERE c.commentDate = :commentDate") })
 public class CommentHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @Basic(optional = false)
+    @Column(name = "comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "COMMENT_ID")
-    @Basic(optional = false)
+    @Expose
     private Integer commentId;
-
-    @Column(name = "FILEPATH")
-    @Basic(optional = false)
-    private String filePath;
-
-    @Column(name = "COMMENTS")
-    @Basic(optional = false)
-    private String comments;
-
+    @Column(name = "filepath")
+    @Expose
+    private String filepath;
+    @Column(name = "comments_detail")
+    @Expose
+    private String commentsDetail;
+    @Column(name = "comment_date")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "COMMENT_DATE")
+    @Expose
     private Date commentDate;
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @ManyToOne
+    private UserDetail userId;
 
-    @JoinColumn(name = "user_id", referencedColumnName = "UserDetail")
-    @OneToMany
-    private UserDetail userDetail;
+    public CommentHistory() {
+    }
+
+    public CommentHistory(Integer commentId) {
+        this.commentId = commentId;
+    }
 
     public Integer getCommentId() {
         return commentId;
@@ -50,20 +77,20 @@ public class CommentHistory implements Serializable {
         this.commentId = commentId;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFilepath() {
+        return filepath;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFilepath(String filepath) {
+        this.filepath = filepath;
     }
 
-    public String getComments() {
-        return comments;
+    public String getCommentsDetail() {
+        return commentsDetail;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setCommentsDetail(String commentsDetail) {
+        this.commentsDetail = commentsDetail;
     }
 
     public Date getCommentDate() {
@@ -74,17 +101,38 @@ public class CommentHistory implements Serializable {
         this.commentDate = commentDate;
     }
 
-    public UserDetail getUserDetail() {
-        return userDetail;
+    public UserDetail getUserId() {
+        return userId;
     }
 
-    public void setUserDetail(UserDetail userDetail) {
-        this.userDetail = userDetail;
+    public void setUserId(UserDetail userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (commentId != null ? commentId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof CommentHistory)) {
+            return false;
+        }
+        CommentHistory other = (CommentHistory) object;
+        if ((this.commentId == null && other.commentId != null)
+                || (this.commentId != null && !this.commentId.equals(other.commentId))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "CommentHistory [commentId=" + commentId + ", filePath=" + filePath + ", comments=" + comments
-                + ", commentDate=" + commentDate + ", userDetail=" + userDetail + "]";
+        return "javaapplication1.CommentHistory[ commentId=" + commentId + " ]";
     }
+
 }

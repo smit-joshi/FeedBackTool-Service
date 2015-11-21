@@ -16,12 +16,24 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
+/**
+ * The Class JsonUtility.
+ *
+ * @author Smit
+ */
 public class JsonUtility {
 
     // This File returns JSON string excluding the fields with @Expose Annotation
 
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(JsonUtility.class);
 
+    /**
+     * Gets the json.
+     *
+     * @param obj the obj
+     * @return the json
+     */
     public static String getJson(Object obj) {
         try {
             final GsonBuilder builder = new GsonBuilder();
@@ -36,6 +48,13 @@ public class JsonUtility {
         }
     }
 
+    /**
+     * Gets the json with date format.
+     *
+     * @param obj the obj
+     * @param dateFormat the date format
+     * @return the json with date format
+     */
     public static String getJsonWithDateFormat(Object obj, String dateFormat) {
         try {
             final GsonBuilder builder = new GsonBuilder();
@@ -49,6 +68,13 @@ public class JsonUtility {
         }
     }
 
+    /**
+     * Gets the json of type.
+     *
+     * @param obj the obj
+     * @param type the type
+     * @return the json of type
+     */
     public static Object getJsonOfType(String obj, Type type) {
         try {
             final GsonBuilder builder = new GsonBuilder();
@@ -77,6 +103,12 @@ public class JsonUtility {
         }
     }
 
+    /**
+     * Gets the jsonexclude transient.
+     *
+     * @param obj the obj
+     * @return the jsonexclude transient
+     */
     public static String getJsonexcludeTransient(Object obj) {
         try {
             Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC).create();
@@ -88,6 +120,11 @@ public class JsonUtility {
         }
     }
 
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
     public static void main(String[] args) {
 
         // transient are by default excluded

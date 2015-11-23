@@ -104,8 +104,4 @@ public class UserDetail implements Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "javaapplication1.UserDetail[ userId=" + userId + " ]";
-    }
 }

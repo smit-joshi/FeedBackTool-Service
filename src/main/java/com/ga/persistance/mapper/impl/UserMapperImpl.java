@@ -28,13 +28,12 @@ public class UserMapperImpl implements IUserMapper {
      * @see com.ga.persistance.mapper.IUserMapper#userLogin(java.lang.String, java.lang.String)
      */
     @Override
-    public UserDetail userLogin(String userName, String password) {
+    public UserDetail userLogin(String userName) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
         Criteria cr = session.createCriteria(UserDetail.class);
         cr.add(Restrictions.like("userName", userName));
-        cr.add(Restrictions.like("password", password));
 
         UserDetail userDetail = (UserDetail) cr.list().get(0);
         return userDetail;

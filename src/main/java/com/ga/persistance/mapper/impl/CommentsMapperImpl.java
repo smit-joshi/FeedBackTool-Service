@@ -55,8 +55,8 @@ public class CommentsMapperImpl implements ICommentsMapper {
     public List<CommentHistory> getCommentsList(String userID) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
-
-        String hql = "FROM CommentHistory";
+        UserDetail userDetail = new UserDetail(userID);
+        String hql = "FROM CommentHistory where userId =" + userDetail.getUserId();
         Query query = session.createQuery(hql);
         List<CommentHistory> communityResuleList = query.list();
         return communityResuleList;

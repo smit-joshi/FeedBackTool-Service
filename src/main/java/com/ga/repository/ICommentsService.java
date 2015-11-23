@@ -2,8 +2,8 @@ package com.ga.repository;
 
 import java.util.List;
 
+import com.ga.domain.model.CommentDTO;
 import com.ga.exception.GAException;
-import com.ga.persistance.entity.CommentHistory;
 
 /**
  * The Interface ICommentsService.
@@ -30,7 +30,7 @@ public interface ICommentsService {
      * @return the comments list
      * @throws GAException the GA exception
      */
-    List<CommentHistory> getCommentsList(String userID) throws GAException;
+    List<CommentDTO> getCommentsList(String userID) throws GAException;
 
     /**
      * Gets the comment by comment id.
@@ -39,6 +39,6 @@ public interface ICommentsService {
      * @return the comment by comment id
      * @throws GAException the GA exception
      */
-    CommentHistory getCommentByCommentID(String commentID) throws GAException;
+    CommentDTO getCommentByCommentID(String commentID) throws GAException;
 
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ga.domain.model.UserDTO;
 import com.ga.exception.ErrorCodes;
 import com.ga.exception.GAException;
 import com.ga.persistance.entity.UserDetail;
@@ -34,15 +35,22 @@ public class UserServiceImpl implements IUserService {
      * @see com.ga.repository.IUserService#userLogin(java.lang.String, java.lang.String)
      */
     @Override
-    public UserDetail userLogin(String userName, String password) throws GAException {
+    public UserDTO userLogin(String userName, String password) throws GAException {
         LOGGER.info("User Login Service called!!");
-        UserDetail userDetail = userMapper.userLogin(userName, password);
+        UserDetail userDetail = userMapper.userLogin(userName);
 
         if (userDetail == null) {
             throw new GAException(ErrorCodes.GA_AUTH_FAILED, "Username and pasword not match");
         }
-        System.out.println("User name :" + userDetail.getUserName());
-        LOGGER.info("User Login Service complete!!");
-        return userDetail;
+        if (userDetail.getPassword().equals(password)) {
+            UserDTO userDto = new UserDTO();
+            userDto.setUserId(userDetail.getUserId());
+            userDto.setUserName(userDetail.getUserName());
+            LOGGER.info("User Login Service complete!!");
+            return userDto;
+        } else {
+            throw new GAException(ErrorCodes.GA_AUTH_FAILED);
+        }
+
     }
 }

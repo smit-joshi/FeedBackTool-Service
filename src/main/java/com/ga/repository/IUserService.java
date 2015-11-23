@@ -1,7 +1,7 @@
 package com.ga.repository;
 
+import com.ga.domain.model.UserDTO;
 import com.ga.exception.GAException;
-import com.ga.persistance.entity.UserDetail;
 
 /**
  * The Interface IUserService.
@@ -15,9 +15,9 @@ public interface IUserService {
      *
      * @param username the username
      * @param password the password
-     * @return the user detail
+     * @return the user dto
      * @throws GAException the GA exception
      */
-    UserDetail userLogin(String username, String password) throws GAException;
+    UserDTO userLogin(String username, String password) throws GAException;
 
 }

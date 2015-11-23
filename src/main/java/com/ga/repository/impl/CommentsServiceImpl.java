@@ -1,5 +1,6 @@
 package com.ga.repository.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ga.domain.model.CommentDTO;
 import com.ga.exception.ErrorCodes;
 import com.ga.exception.GAException;
 import com.ga.persistance.entity.CommentHistory;
@@ -55,15 +57,25 @@ public class CommentsServiceImpl implements ICommentsService {
      * @see com.ga.repository.ICommentsService#getCommentsList(java.lang.String)
      */
     @Override
-    public List<CommentHistory> getCommentsList(String userID) throws GAException {
+    public List<CommentDTO> getCommentsList(String userID) throws GAException {
         LOGGER.info("Get commemts list called!!");
-        List<CommentHistory> commentsHistory = commentsMapper.getCommentsList(userID);
+        List<CommentHistory> commentHistoryList = commentsMapper.getCommentsList(userID);
+        List<CommentDTO> commentsDtoList = new ArrayList<CommentDTO>();
 
-        if (commentsHistory.isEmpty()) {
+        if (commentHistoryList.isEmpty()) {
+            throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
+        }
+
+        for (CommentHistory commentHistory : commentHistoryList) {
+            commentsDtoList.add(convertEntityToDTO(commentHistory));
+        }
+
+        if (commentHistoryList.isEmpty()) {
             throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
         } else {
-            return commentsHistory;
+            return commentsDtoList;
         }
+
     }
 
     /*
@@ -72,15 +84,32 @@ public class CommentsServiceImpl implements ICommentsService {
      * @see com.ga.repository.ICommentsService#getCommentByCommentID(java.lang.String)
      */
     @Override
-    public CommentHistory getCommentByCommentID(String commentID) throws GAException {
+    public CommentDTO getCommentByCommentID(String commentID) throws GAException {
         LOGGER.info("Get commemt by comment id called!!");
         int commentId = Integer.parseInt(commentID);
         CommentHistory commentHistory = commentsMapper.getCommentByCommentID(commentId);
 
         if (commentHistory == null) {
             throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
-        } else {
-            return commentHistory;
         }
+
+        return convertEntityToDTO(commentHistory);
     }
+
+    /**
+     * Convert entity to dto.
+     *
+     * @param commentHistory the comment history
+     * @return the comment dto
+     */
+    private CommentDTO convertEntityToDTO(CommentHistory commentHistory) {
+        CommentDTO commentDto = new CommentDTO();
+        commentDto.setCommentDate(commentHistory.getCommentDate());
+        commentDto.setCommentId(commentHistory.getCommentId());
+        commentDto.setCommentsDetail(commentHistory.getCommentsDetail());
+        commentDto.setFilepath(commentHistory.getFilepath());
+
+        return commentDto;
+    }
+
 }

@@ -9,6 +9,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ga.exception.ErrorCodes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -117,6 +118,26 @@ public class JsonUtility {
             e.printStackTrace();
             LOG.info(e.toString());
             return "";
+        }
+    }
+
+    public static String getJson(ErrorCodes error, Object obj) {
+
+        Response response = new Response();
+
+        response.setMessage(error);
+        response.setData(obj);
+        try {
+            final GsonBuilder builder = new GsonBuilder();
+
+            /* null values are not included in return data */
+            // builder.serializeNulls();
+            builder.setDateFormat("dd-MM-yyyy");
+            final Gson g = builder.create();
+            return g.toJson(response);
+        } catch (Exception e) {
+            LOG.error("Parsing Error: ", e.toString());
+            return "It's hard to say but something went wrong!";
         }
     }
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.ga.common.JsonUtility;
 import com.ga.domain.model.CommentDTO;
@@ -42,23 +43,34 @@ public class CommentsController {
      * @param userId the user id
      * @return the string
      */
-    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String uploadFile(@RequestParam("filePath") String filePath, @RequestParam("comments") String comments,
+    @RequestMapping(value = "/addcomments", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String addComments(@RequestParam("filePath") String filePath, @RequestParam("comments") String comments,
             @RequestParam("userId") String userId) {
 
-        LOGGER.info(String.format("Filepath = %s, comments : %s, userName : %s ", filePath, comments, userId));
+        LOGGER.info(String.format("comments : %s,comments : %s, userName : %s ", filePath, comments, userId));
         try {
             if (filePath.isEmpty() && comments.isEmpty()) {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
 
-            if (commentsService.uploadFile(filePath, comments, userId)) {
+            if (commentsService.addComments(filePath, comments, userId)) {
                 LOGGER.info("File upload successfull");
                 return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK);
             } else {
                 LOGGER.info("File upload error");
                 throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
             }
+        } catch (GAException e) {
+            e.printStackTrace();
+            return JsonUtility.getJson("Error");
+        }
+    }
+
+    @RequestMapping(value = "/uploadfile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String uploadFile(@RequestParam CommonsMultipartFile file) {
+        LOGGER.info("File size : " + file.getSize());
+        try {
+            return JsonUtility.getJson(commentsService.uploadFile(file));
         } catch (GAException e) {
             e.printStackTrace();
             return JsonUtility.getJson("Error");

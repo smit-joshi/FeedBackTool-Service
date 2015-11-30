@@ -2,6 +2,8 @@ package com.ga.persistance.mapper;
 
 import java.util.List;
 
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
 import com.ga.persistance.entity.CommentHistory;
 
 /**
@@ -14,7 +16,7 @@ public interface ICommentsMapper {
     /**
      * Upload file.
      *
-     * @param filePath the file path
+     * @param filePath the file upload
      * @param comments the comments
      * @param userID the user id
      * @return true, if successful

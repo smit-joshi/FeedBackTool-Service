@@ -36,7 +36,7 @@ public class CommentsMapperImpl implements ICommentsMapper {
 
         CommentHistory commentsHistory = new CommentHistory();
         commentsHistory.setCommentsDetail(comments);
-        commentsHistory.setFilepath(filePath);
+        // commentsHistory.setFilepath(filePath);
         commentsHistory.setUserId(new UserDetail(userID));
         commentsHistory.setCommentDate(new Date());
 

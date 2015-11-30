@@ -2,6 +2,8 @@ package com.ga.repository;
 
 import java.util.List;
 
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
 import com.ga.domain.model.CommentDTO;
 import com.ga.exception.GAException;
 
@@ -21,7 +23,7 @@ public interface ICommentsService {
      * @return true, if successful
      * @throws GAException the GA exception
      */
-    boolean uploadFile(String filePath, String comments, String userID) throws GAException;
+    boolean addComments(String filePath, String comments, String userID) throws GAException;
 
     /**
      * Gets the comments list.
@@ -40,5 +42,7 @@ public interface ICommentsService {
      * @throws GAException the GA exception
      */
     CommentDTO getCommentByCommentID(String commentID) throws GAException;
+
+    String uploadFile(CommonsMultipartFile file) throws GAException;
 
 }

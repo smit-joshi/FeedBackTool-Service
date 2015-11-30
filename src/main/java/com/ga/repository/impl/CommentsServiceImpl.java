@@ -1,13 +1,21 @@
 package com.ga.repository.impl;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sql.rowset.serial.SerialException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.ga.domain.model.CommentDTO;
 import com.ga.exception.ErrorCodes;
@@ -38,7 +46,7 @@ public class CommentsServiceImpl implements ICommentsService {
      * @see com.ga.repository.ICommentsService#uploadFile(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public boolean uploadFile(String filePath, String comments, String userID) throws GAException {
+    public boolean addComments(String filePath, String comments, String userID) throws GAException {
         LOGGER.info("Upload file called!!");
         boolean result = commentsMapper.uploadFile(filePath, comments, userID);
 
@@ -110,6 +118,53 @@ public class CommentsServiceImpl implements ICommentsService {
         commentDto.setFilepath(commentHistory.getFilepath());
 
         return commentDto;
+    }
+
+    @Override
+    public String uploadFile(CommonsMultipartFile file) throws GAException {
+        LOGGER.info("Upload file called!!");
+        String fileName;
+        try {
+            fileName = checkIsFile(file);
+            if (fileName.isEmpty()) {
+                throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
+            }
+            LOGGER.info(String.format("Upload file complete!! File path : %s", fileName));
+            return fileName;
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (SerialException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String checkIsFile(CommonsMultipartFile file) throws IllegalStateException, IOException, SerialException,
+            SQLException {
+        LOGGER.info("checkIsFile :" + file.getSize());
+        LOGGER.info("checkIsFile :" + file);
+
+        if (!file.isEmpty()) {
+            LOGGER.info("checkIsFile return true:");
+            byte[] bytes = file.getBytes();
+
+            String fileName = file.getOriginalFilename();
+            File newFile = new File("../webapps/FeedbackTool/comments/" + fileName);
+
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(newFile));
+            LOGGER.info("newFile :" + newFile);
+
+            bufferedOutputStream.write(bytes);
+            bufferedOutputStream.close();
+            return newFile.getPath();
+        } else {
+            LOGGER.info("checkIsFile return false:");
+            return null;
+        }
     }
 
 }

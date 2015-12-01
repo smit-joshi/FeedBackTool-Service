@@ -132,7 +132,8 @@ public class JsonUtility {
 
             /* null values are not included in return data */
             // builder.serializeNulls();
-            builder.setDateFormat("dd-MM-yyyy");
+            // builder.setDateFormat("dd-MM-yyyy HH:MM:DD");
+
             final Gson g = builder.create();
             return g.toJson(response);
         } catch (Exception e) {

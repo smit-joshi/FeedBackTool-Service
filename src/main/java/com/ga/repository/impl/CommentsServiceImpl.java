@@ -4,11 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sql.rowset.serial.SerialException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +52,7 @@ public class CommentsServiceImpl implements ICommentsService {
             return true;
         } else {
             LOGGER.info("File upload error");
-            return false;
+            throw new GAException(ErrorCodes.GA_INTERNAL);
         }
     }
 
@@ -70,20 +67,21 @@ public class CommentsServiceImpl implements ICommentsService {
         List<CommentHistory> commentHistoryList = commentsMapper.getCommentsList(userID);
         List<CommentDTO> commentsDtoList = new ArrayList<CommentDTO>();
 
+        // get data from database and store with list object.
         if (commentHistoryList.isEmpty()) {
-            throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
+            throw new GAException(ErrorCodes.GA_INTERNAL);
         }
 
         for (CommentHistory commentHistory : commentHistoryList) {
             commentsDtoList.add(convertEntityToDTO(commentHistory));
         }
-
-        if (commentHistoryList.isEmpty()) {
-            throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
+        // converted with dto and return to controller
+        if (commentsDtoList.isEmpty()) {
+            throw new GAException(ErrorCodes.GA_INTERNAL);
         } else {
+            LOGGER.info("CommentsDtoList : " + commentsDtoList.toString());
             return commentsDtoList;
         }
-
     }
 
     /*
@@ -116,7 +114,7 @@ public class CommentsServiceImpl implements ICommentsService {
         commentDto.setCommentId(commentHistory.getCommentId());
         commentDto.setCommentsDetail(commentHistory.getCommentsDetail());
         commentDto.setFilepath(commentHistory.getFilepath());
-
+        LOGGER.info("Date : " + commentDto.getCommentDate());
         return commentDto;
     }
 
@@ -132,39 +130,35 @@ public class CommentsServiceImpl implements ICommentsService {
             LOGGER.info(String.format("Upload file complete!! File path : %s", fileName));
             return fileName;
         } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (SerialException e) {
-            e.printStackTrace();
+            throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
+        }
+    }
+
+    private String checkIsFile(CommonsMultipartFile file) throws GAException {
+        LOGGER.info("Checkfile is called!!");
+
+        try {
+            if (!file.isEmpty()) {
+                LOGGER.info("checkIsFile return true:");
+                byte[] bytes = file.getBytes();
+
+                String fileName = file.getOriginalFilename();
+                File newFile = new File("../webapps/FeedbackTool/comments/" + fileName);
+
+                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(newFile));
+                LOGGER.info("newFile :" + newFile);
+
+                bufferedOutputStream.write(bytes);
+                bufferedOutputStream.close();
+                return newFile.getPath();
+
+            } else {
+                LOGGER.info("checkIsFile return false:");
+                throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
+            }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private String checkIsFile(CommonsMultipartFile file) throws IllegalStateException, IOException, SerialException,
-            SQLException {
-        LOGGER.info("checkIsFile :" + file.getSize());
-        LOGGER.info("checkIsFile :" + file);
-
-        if (!file.isEmpty()) {
-            LOGGER.info("checkIsFile return true:");
-            byte[] bytes = file.getBytes();
-
-            String fileName = file.getOriginalFilename();
-            File newFile = new File("../webapps/FeedbackTool/comments/" + fileName);
-
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(newFile));
-            LOGGER.info("newFile :" + newFile);
-
-            bufferedOutputStream.write(bytes);
-            bufferedOutputStream.close();
-            return newFile.getPath();
-        } else {
-            LOGGER.info("checkIsFile return false:");
-            return null;
+            throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
         }
     }
-
 }

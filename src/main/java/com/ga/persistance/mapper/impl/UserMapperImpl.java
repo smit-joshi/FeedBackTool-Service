@@ -1,12 +1,15 @@
 package com.ga.persistance.mapper.impl;
 
-import org.hibernate.Criteria;
+import java.util.List;
+
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.ga.exception.ErrorCodes;
+import com.ga.exception.GAException;
 import com.ga.persistance.entity.UserDetail;
 import com.ga.persistance.mapper.IUserMapper;
 
@@ -28,14 +31,20 @@ public class UserMapperImpl implements IUserMapper {
      * @see com.ga.persistance.mapper.IUserMapper#userLogin(java.lang.String, java.lang.String)
      */
     @Override
-    public UserDetail userLogin(String userName) {
+    public UserDetail userLogin(String userName) throws GAException {
+        System.out.println("Login :" + userName);
         Session session = sessionFactory.openSession();
-        session.beginTransaction();
+        session.getTransaction().begin();
+        Query query = session.createQuery("from UserDetail u where u.userName=:userName");
+        query.setParameter("userName", userName);
 
-        Criteria cr = session.createCriteria(UserDetail.class);
-        cr.add(Restrictions.like("userName", userName));
-
-        UserDetail userDetail = (UserDetail) cr.list().get(0);
-        return userDetail;
+        List list = query.list();
+        if (list == null || list.size() == 0) {
+            throw new GAException(ErrorCodes.GA_AUTH_FAILED);
+        } else {
+            UserDetail userDetail = (UserDetail) list.get(0);
+            System.out.println(userDetail);
+            return userDetail;
+        }
     }
 }

@@ -36,7 +36,7 @@ public class CommentsMapperImpl implements ICommentsMapper {
 
         CommentHistory commentsHistory = new CommentHistory();
         commentsHistory.setCommentsDetail(comments);
-        // commentsHistory.setFilepath(filePath);
+        commentsHistory.setFilepath(filePath);
         commentsHistory.setUserId(new UserDetail(userID));
         commentsHistory.setCommentDate(new Date());
 
@@ -56,7 +56,7 @@ public class CommentsMapperImpl implements ICommentsMapper {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         UserDetail userDetail = new UserDetail(userID);
-        String hql = "FROM CommentHistory where userId =" + userDetail.getUserId();
+        String hql = "FROM CommentHistory where userId =" + userDetail.getUserId() + "ORDER BY commentDate DESC";
         Query query = session.createQuery(hql);
         List<CommentHistory> communityResuleList = query.list();
         return communityResuleList;

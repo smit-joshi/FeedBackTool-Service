@@ -1,5 +1,6 @@
 package com.ga.persistance.mapper;
 
+import com.ga.exception.GAException;
 import com.ga.persistance.entity.UserDetail;
 
 /**
@@ -14,6 +15,7 @@ public interface IUserMapper {
      *
      * @param userName the user name
      * @return the user detail
+     * @throws GAException the GA exception
      */
-    UserDetail userLogin(String userName);
+    UserDetail userLogin(String userName) throws GAException;
 }

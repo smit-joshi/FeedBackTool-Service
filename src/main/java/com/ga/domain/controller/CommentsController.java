@@ -53,27 +53,46 @@ public class CommentsController {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
 
-            if (commentsService.addComments(filePath, comments, userId)) {
-                LOGGER.info("File upload successfull");
-                return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK);
-            } else {
+            if (!commentsService.addComments(filePath, comments, userId)) {
                 LOGGER.info("File upload error");
                 throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
             }
+            LOGGER.info("File upload successfull");
+            return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, null);
+
         } catch (GAException e) {
-            e.printStackTrace();
-            return JsonUtility.getJson("Error");
+            if (e.getCode() == ErrorCodes.GA_FILE_UPLOAD.getErrorCode()) {
+                return JsonUtility.getJson(ErrorCodes.GA_FILE_UPLOAD, null);
+            } else if (e.getCode() == ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET.getErrorCode()) {
+                return JsonUtility.getJson(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET, null);
+            } else {
+                return JsonUtility.getJson(ErrorCodes.GA_INTERNAL, null);
+            }
         }
     }
 
     @RequestMapping(value = "/uploadfile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public String uploadFile(@RequestParam CommonsMultipartFile file) {
         LOGGER.info("File size : " + file.getSize());
+        CommentDTO commentDto = new CommentDTO();
+
         try {
-            return JsonUtility.getJson(commentsService.uploadFile(file));
+            String resultFilePath = commentsService.uploadFile(file);
+            if (resultFilePath.isEmpty()) {
+                throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
+            }
+            commentDto.setFilepath(resultFilePath);
+            return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, commentDto);
         } catch (GAException e) {
-            e.printStackTrace();
-            return JsonUtility.getJson("Error");
+            if (e.getCode() == ErrorCodes.GA_FILE_UPLOAD.getErrorCode()) {
+                return JsonUtility.getJson(ErrorCodes.GA_FILE_UPLOAD, null);
+
+            } else if (e.getCode() == ErrorCodes.GA_DATA_NOT_FOUND.getErrorCode()) {
+                return JsonUtility.getJson(ErrorCodes.GA_DATA_NOT_FOUND, null);
+
+            } else {
+                return JsonUtility.getJson(ErrorCodes.GA_INTERNAL, null);
+            }
         }
     }
 
@@ -95,8 +114,15 @@ public class CommentsController {
             List<CommentDTO> commentsDtoList = commentsService.getCommentsList(userId);
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, commentsDtoList);
         } catch (GAException e) {
-            e.printStackTrace();
-            return JsonUtility.getJson(ErrorCodes.GA_DATA_NOT_FOUND);
+            if (e.getCode() == ErrorCodes.GA_DATA_NOT_FOUND.getErrorCode()) {
+                return JsonUtility.getJson(ErrorCodes.GA_DATA_NOT_FOUND, null);
+
+            } else if(e.getCode() == ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET.getErrorCode()){
+                return JsonUtility.getJson(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET, null);
+                
+            }else {
+                return JsonUtility.getJson(ErrorCodes.GA_INTERNAL, null);
+            }
         }
     }
 

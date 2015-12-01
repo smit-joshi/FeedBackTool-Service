@@ -39,9 +39,7 @@ public class UserServiceImpl implements IUserService {
         LOGGER.info("User Login Service called!!");
         UserDetail userDetail = userMapper.userLogin(userName);
 
-        if (userDetail == null) {
-            throw new GAException(ErrorCodes.GA_AUTH_FAILED, "Username and pasword not match");
-        }
+        
         if (userDetail.getPassword().equals(password)) {
             UserDTO userDto = new UserDTO();
             userDto.setUserId(userDetail.getUserId());
@@ -51,6 +49,5 @@ public class UserServiceImpl implements IUserService {
         } else {
             throw new GAException(ErrorCodes.GA_AUTH_FAILED);
         }
-
     }
 }

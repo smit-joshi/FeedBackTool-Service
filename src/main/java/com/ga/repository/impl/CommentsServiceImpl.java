@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -98,6 +99,7 @@ public class CommentsServiceImpl implements ICommentsService {
         if (commentHistory == null) {
             throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
         }
+
         return convertEntityToDTO(commentHistory);
     }
 
@@ -112,7 +114,8 @@ public class CommentsServiceImpl implements ICommentsService {
         commentDto.setCommentDate(commentHistory.getCommentDate());
         commentDto.setCommentId(commentHistory.getCommentId());
         commentDto.setCommentsDetail(commentHistory.getCommentsDetail());
-        commentDto.setFilepath(commentHistory.getFilepath());
+        String filePath[] = commentHistory.getFilepath().split("/");
+        commentDto.setFilepath(filePath[7]);
         return commentDto;
     }
 
@@ -150,14 +153,13 @@ public class CommentsServiceImpl implements ICommentsService {
      */
     private String checkIsFile(CommonsMultipartFile file) throws GAException {
         LOGGER.info("Checkfile is called!!");
-
         try {
             if (!file.isEmpty()) {
                 LOGGER.info("checkIsFile return true:");
                 byte[] bytes = file.getBytes();
-
-                String fileName = file.getOriginalFilename();
-                File newFile = new File("/" + fileName);
+                Long f = new Date().getTime();
+                
+                File newFile = new File("/var/lib/tomcat7/webapps/ROOT/comments/" + f);
 
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(newFile));
                 LOGGER.info("newFile :" + newFile);

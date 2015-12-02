@@ -157,7 +157,7 @@ public class CommentsServiceImpl implements ICommentsService {
                 byte[] bytes = file.getBytes();
 
                 String fileName = file.getOriginalFilename();
-                File newFile = new File("../webapps/FeedbackTool/comments/" + fileName);
+                File newFile = new File("/" + fileName);
 
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(newFile));
                 LOGGER.info("newFile :" + newFile);

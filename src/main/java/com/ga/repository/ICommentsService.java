@@ -15,7 +15,7 @@ import com.ga.exception.GAException;
 public interface ICommentsService {
 
     /**
-     * Upload file.
+     * Adds the comments.
      *
      * @param filePath the file path
      * @param comments the comments
@@ -43,6 +43,13 @@ public interface ICommentsService {
      */
     CommentDTO getCommentByCommentID(String commentID) throws GAException;
 
+    /**
+     * Upload file.
+     *
+     * @param file the file
+     * @return the string
+     * @throws GAException the GA exception
+     */
     String uploadFile(CommonsMultipartFile file) throws GAException;
 
 }

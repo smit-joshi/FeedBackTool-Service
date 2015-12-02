@@ -106,10 +106,6 @@ public class UserDetail implements Serializable {
 
     @Override
     public String toString() {
-        return "UserDetail [userId=" + userId + ", userName=" + userName + ", password=" + password
-                + ", commentHistoryCollection=" + commentHistoryCollection + "]";
+        return "UserDetail [userId=" + userId + ", userName=" + userName + "]";
     }
-    
-    
-
 }

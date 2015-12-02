@@ -24,9 +24,7 @@ public class CommentsMapperImpl implements ICommentsMapper {
     @Autowired
     SessionFactory sessionFactory;
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see com.ga.persistance.mapper.ICommentsMapper#uploadFile(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
@@ -46,9 +44,7 @@ public class CommentsMapperImpl implements ICommentsMapper {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see com.ga.persistance.mapper.ICommentsMapper#getCommentsList(java.lang.String)
      */
     @Override
@@ -56,15 +52,15 @@ public class CommentsMapperImpl implements ICommentsMapper {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         UserDetail userDetail = new UserDetail(userID);
+
         String hql = "FROM CommentHistory where userId =" + userDetail.getUserId() + "ORDER BY commentDate DESC";
         Query query = session.createQuery(hql);
         List<CommentHistory> communityResuleList = query.list();
+
         return communityResuleList;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see com.ga.persistance.mapper.ICommentsMapper#getCommentByCommentID(int)
      */
     @Override

@@ -28,7 +28,7 @@ public class UserMapperImpl implements IUserMapper {
     /*
      * (non-Javadoc)
      * 
-     * @see com.ga.persistance.mapper.IUserMapper#userLogin(java.lang.String, java.lang.String)
+     * @see com.ga.persistance.mapper.IUserMapper#userLogin(java.lang.String)
      */
     @Override
     public UserDetail userLogin(String userName) throws GAException {

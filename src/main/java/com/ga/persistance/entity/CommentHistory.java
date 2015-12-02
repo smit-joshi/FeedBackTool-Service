@@ -124,4 +124,9 @@ public class CommentHistory implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "CommentHistory [commentId=" + commentId + ", filepath=" + filepath + ", commentDate=" + commentDate
+                + "]";
+    }
 }

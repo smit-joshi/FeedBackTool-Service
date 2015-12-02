@@ -31,7 +31,7 @@ import com.ga.repository.ICommentsService;
 public class CommentsServiceImpl implements ICommentsService {
 
     /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentsServiceImpl.class);
 
     /** The comments mapper. */
     @Autowired
@@ -40,7 +40,7 @@ public class CommentsServiceImpl implements ICommentsService {
     /*
      * (non-Javadoc)
      * 
-     * @see com.ga.repository.ICommentsService#uploadFile(java.lang.String, java.lang.String, java.lang.String)
+     * @see com.ga.repository.ICommentsService#addComments(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
     public boolean addComments(String filePath, String comments, String userID) throws GAException {
@@ -75,7 +75,7 @@ public class CommentsServiceImpl implements ICommentsService {
         for (CommentHistory commentHistory : commentHistoryList) {
             commentsDtoList.add(convertEntityToDTO(commentHistory));
         }
-        // converted with dto and return to controller
+        // convert into dto and return to controller
         if (commentsDtoList.isEmpty()) {
             throw new GAException(ErrorCodes.GA_INTERNAL);
         } else {
@@ -98,7 +98,6 @@ public class CommentsServiceImpl implements ICommentsService {
         if (commentHistory == null) {
             throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
         }
-
         return convertEntityToDTO(commentHistory);
     }
 
@@ -114,10 +113,15 @@ public class CommentsServiceImpl implements ICommentsService {
         commentDto.setCommentId(commentHistory.getCommentId());
         commentDto.setCommentsDetail(commentHistory.getCommentsDetail());
         commentDto.setFilepath(commentHistory.getFilepath());
-        LOGGER.info("Date : " + commentDto.getCommentDate());
         return commentDto;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.ga.repository.ICommentsService#uploadFile(org.springframework.web.multipart.commons.CommonsMultipartFile)
+     */
     @Override
     public String uploadFile(CommonsMultipartFile file) throws GAException {
         LOGGER.info("Upload file called!!");
@@ -125,15 +129,25 @@ public class CommentsServiceImpl implements ICommentsService {
         try {
             fileName = checkIsFile(file);
             if (fileName.isEmpty()) {
+                LOGGER.info("File is empty!!");
                 throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
             }
             LOGGER.info(String.format("Upload file complete!! File path : %s", fileName));
             return fileName;
         } catch (IllegalStateException e) {
+            LOGGER.info("Exception : " + e.getMessage());
+            LOGGER.info("stack trace :  " + e);
             throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
         }
     }
 
+    /**
+     * Check is file.
+     *
+     * @param file the file
+     * @return the string
+     * @throws GAException the GA exception
+     */
     private String checkIsFile(CommonsMultipartFile file) throws GAException {
         LOGGER.info("Checkfile is called!!");
 
@@ -150,6 +164,7 @@ public class CommentsServiceImpl implements ICommentsService {
 
                 bufferedOutputStream.write(bytes);
                 bufferedOutputStream.close();
+                LOGGER.info("return file");
                 return newFile.getPath();
 
             } else {

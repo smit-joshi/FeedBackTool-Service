@@ -39,7 +39,6 @@ public class UserServiceImpl implements IUserService {
         LOGGER.info("User Login Service called!!");
         UserDetail userDetail = userMapper.userLogin(userName);
 
-        
         if (userDetail.getPassword().equals(password)) {
             UserDTO userDto = new UserDTO();
             userDto.setUserId(userDetail.getUserId());

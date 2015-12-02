@@ -48,20 +48,23 @@ public class UserController {
             if (username.isEmpty() && password.isEmpty()) {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
+            // This is return user after credential match
             UserDTO userDto = userService.userLogin(username, password);
             LOGGER.info("User login complete!!");
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, userDto);
         } catch (GAException e) {
+            e.printStackTrace();
+            
             if (e.getCode() == ErrorCodes.GA_AUTH_FAILED.getErrorCode()) {
-                LOGGER.info(e.getMessage());
+                LOGGER.info("Auth fail");
                 return JsonUtility.getJson(ErrorCodes.GA_AUTH_FAILED, null);
 
             } else if (e.getCode() == ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET.getErrorCode()) {
-                LOGGER.info(e.getMessage());
+                LOGGER.info("Parameter not set");
                 return JsonUtility.getJson(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET, null);
 
             } else {
-                LOGGER.info(e.getMessage());
+                LOGGER.info("Data not set");
                 return JsonUtility.getJson(ErrorCodes.GA_DATA_NOT_FOUND, null);
             }
         }

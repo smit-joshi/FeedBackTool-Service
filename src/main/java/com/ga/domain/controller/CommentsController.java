@@ -36,7 +36,7 @@ public class CommentsController {
     ICommentsService commentsService;
 
     /**
-     * Upload file.
+     * Adds the comments.
      *
      * @param filePath the file path
      * @param comments the comments
@@ -53,7 +53,8 @@ public class CommentsController {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
 
-            if (!commentsService.addComments(filePath, comments, userId)) {
+            boolean resultSaveComment = commentsService.addComments(filePath, comments, userId);
+            if (!resultSaveComment) {
                 LOGGER.info("File upload error");
                 throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
             }
@@ -61,23 +62,38 @@ public class CommentsController {
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, null);
 
         } catch (GAException e) {
+            e.printStackTrace();
             if (e.getCode() == ErrorCodes.GA_FILE_UPLOAD.getErrorCode()) {
+                LOGGER.info("File upload error");
                 return JsonUtility.getJson(ErrorCodes.GA_FILE_UPLOAD, null);
             } else if (e.getCode() == ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET.getErrorCode()) {
+                LOGGER.info("Parameter not set");
                 return JsonUtility.getJson(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET, null);
             } else {
+                LOGGER.info("Internal error. Obj is null");
                 return JsonUtility.getJson(ErrorCodes.GA_INTERNAL, null);
             }
         }
     }
 
+    /**
+     * Upload file.
+     *
+     * @param file the file
+     * @return the string
+     */
     @RequestMapping(value = "/uploadfile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public String uploadFile(@RequestParam CommonsMultipartFile file) {
         LOGGER.info("File size : " + file.getSize());
         CommentDTO commentDto = new CommentDTO();
 
         try {
+            if (file.isEmpty()) {
+                throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
+            }
+
             String resultFilePath = commentsService.uploadFile(file);
+
             if (resultFilePath.isEmpty()) {
                 throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
             }
@@ -110,17 +126,17 @@ public class CommentsController {
             if (userId.isEmpty()) {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
-
+            // This is call service to get comment for specific user.
             List<CommentDTO> commentsDtoList = commentsService.getCommentsList(userId);
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, commentsDtoList);
         } catch (GAException e) {
             if (e.getCode() == ErrorCodes.GA_DATA_NOT_FOUND.getErrorCode()) {
                 return JsonUtility.getJson(ErrorCodes.GA_DATA_NOT_FOUND, null);
 
-            } else if(e.getCode() == ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET.getErrorCode()){
+            } else if (e.getCode() == ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET.getErrorCode()) {
                 return JsonUtility.getJson(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET, null);
-                
-            }else {
+
+            } else {
                 return JsonUtility.getJson(ErrorCodes.GA_INTERNAL, null);
             }
         }
@@ -139,6 +155,7 @@ public class CommentsController {
             if (commentId.isEmpty()) {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
+            // This is call service to get comment by comment id.
             CommentDTO commentsDto = commentsService.getCommentByCommentID(commentId);
             if (commentsDto == null) {
                 throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
@@ -146,7 +163,7 @@ public class CommentsController {
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, commentsDto);
         } catch (GAException e) {
             e.printStackTrace();
-            return JsonUtility.getJson(ErrorCodes.GA_DATA_NOT_FOUND);
+            return JsonUtility.getJson(ErrorCodes.GA_DATA_NOT_FOUND, null);
         }
     }
 }

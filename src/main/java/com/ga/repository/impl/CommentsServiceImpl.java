@@ -114,8 +114,7 @@ public class CommentsServiceImpl implements ICommentsService {
         commentDto.setCommentDate(commentHistory.getCommentDate());
         commentDto.setCommentId(commentHistory.getCommentId());
         commentDto.setCommentsDetail(commentHistory.getCommentsDetail());
-        String filePath[] = commentHistory.getFilepath().split("/");
-        commentDto.setFilepath(filePath[7]);
+        commentDto.setFilepath(commentHistory.getFilepath());
         return commentDto;
     }
 
@@ -158,16 +157,16 @@ public class CommentsServiceImpl implements ICommentsService {
                 LOGGER.info("checkIsFile return true:");
                 byte[] bytes = file.getBytes();
                 Long f = new Date().getTime();
-                
-                File newFile = new File("/var/lib/tomcat7/webapps/ROOT/comments/" + f);
+
+                File newFile = new File("/var/lib/tomcat7/webapps/ROOT/comments/" + f + ".jpg");
 
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(newFile));
                 LOGGER.info("newFile :" + newFile);
 
                 bufferedOutputStream.write(bytes);
                 bufferedOutputStream.close();
-                LOGGER.info("return file");
-                return newFile.getPath();
+                LOGGER.info("return file :" + newFile.getName());
+                return newFile.getName();
 
             } else {
                 LOGGER.info("checkIsFile return false:");

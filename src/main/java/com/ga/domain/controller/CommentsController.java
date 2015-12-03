@@ -49,7 +49,7 @@ public class CommentsController {
 
         LOGGER.info(String.format("comments : %s,comments : %s, userName : %s ", filePath, comments, userId));
         try {
-            if (filePath.isEmpty() && comments.isEmpty()) {
+            if (filePath.isEmpty() || comments.isEmpty()) {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
 
@@ -97,7 +97,7 @@ public class CommentsController {
             if (resultFilePath.isEmpty()) {
                 throw new GAException(ErrorCodes.GA_FILE_UPLOAD);
             }
-            commentDto.setFilepath(resultFilePath);
+            commentDto.setFilepath("comments/" + resultFilePath);
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, commentDto);
         } catch (GAException e) {
             if (e.getCode() == ErrorCodes.GA_FILE_UPLOAD.getErrorCode()) {

@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 
+import com.ga.exception.GAException;
 import com.ga.persistance.entity.CommentHistory;
 import com.ga.persistance.mapper.ICommentsMapper;
 import com.ga.persistance.mapper.impl.CommentsMapperImpl;
@@ -33,7 +34,7 @@ public class GetSchedulerTask extends TimerTask {
             List<CommentHistory> list = mapper.getCommentsList("1");
             System.out.println("Size :" + list.size());
             LOGGER.info("Scheduler job called successfully");
-        } catch (Exception e) {
+        } catch (GAException e) {
             LOGGER.error("Error while communicate with scheduler job");
             LOGGER.error(e);
         }

@@ -120,14 +120,14 @@ public class CommentsController {
      */
     @RequestMapping(value = "getallcomments", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String getAllComments(@RequestParam("userId") String userId) {
-        LOGGER.info("UserId : " + userId);
+    public String getAllComments(@RequestParam("userId") String userId, @RequestParam("userTime") Integer userTime) {
+        LOGGER.info("UserId : " + userId + " User Time " + userTime);
         try {
-            if (userId.isEmpty()) {
+            if (userId.isEmpty() && userTime == null) {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
             // This is call service to get comment for specific user.
-            List<CommentDTO> commentsDtoList = commentsService.getCommentsList(userId);
+            List<CommentDTO> commentsDtoList = commentsService.getCommentsList(userId, userTime);
             return JsonUtility.getJson(ErrorCodes.GA_TRANSACTION_OK, commentsDtoList);
         } catch (GAException e) {
             if (e.getCode() == ErrorCodes.GA_DATA_NOT_FOUND.getErrorCode()) {
@@ -149,14 +149,14 @@ public class CommentsController {
      * @return the comment by id
      */
     @RequestMapping(value = "getcommentbyid", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getCommentById(@RequestParam("commentId") String commentId) {
-        LOGGER.info("CommentId : " + commentId);
+    public String getCommentById(@RequestParam("commentId") String commentId, @RequestParam("userTime") Integer userTime) {
+        LOGGER.info("CommentId : " + commentId + " User Time " + userTime);
         try {
-            if (commentId.isEmpty()) {
+            if (commentId.isEmpty() && userTime == null) {
                 throw new GAException(ErrorCodes.GA_MANDATORY_PARAMETERS_NOT_SET);
             }
             // This is call service to get comment by comment id.
-            CommentDTO commentsDto = commentsService.getCommentByCommentID(commentId);
+            CommentDTO commentsDto = commentsService.getCommentByCommentID(commentId, userTime);
             if (commentsDto == null) {
                 throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
             }

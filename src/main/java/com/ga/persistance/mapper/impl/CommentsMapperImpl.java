@@ -1,7 +1,10 @@
 package com.ga.persistance.mapper.impl;
 
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -26,11 +29,6 @@ public class CommentsMapperImpl implements ICommentsMapper {
     @Autowired
     SessionFactory sessionFactory;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.ga.persistance.mapper.ICommentsMapper#uploadFile(java.lang.String, java.lang.String, java.lang.String)
-     */
     @Override
     public boolean uploadFile(String filePath, String comments, String userID) {
         Session session = sessionFactory.openSession();
@@ -40,7 +38,13 @@ public class CommentsMapperImpl implements ICommentsMapper {
         commentsHistory.setCommentsDetail(comments);
         commentsHistory.setFilepath(filePath);
         commentsHistory.setUserId(new UserDetail(userID));
-        commentsHistory.setCommentDate(new Date());
+
+        TimeZone timeZone = TimeZone.getTimeZone("UTC");
+        Calendar calendar = Calendar.getInstance(timeZone);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+        simpleDateFormat.setTimeZone(timeZone);
+
+        commentsHistory.setCommentDate(calendar.getTime());
 
         session.save(commentsHistory);
         session.getTransaction().commit();

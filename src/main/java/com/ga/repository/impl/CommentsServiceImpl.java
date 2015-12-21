@@ -4,9 +4,13 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +67,7 @@ public class CommentsServiceImpl implements ICommentsService {
      * @see com.ga.repository.ICommentsService#getCommentsList(java.lang.String)
      */
     @Override
-    public List<CommentDTO> getCommentsList(String userID) throws GAException {
+    public List<CommentDTO> getCommentsList(String userID, Integer userTime) throws GAException {
         LOGGER.info("Get commemts list called!!");
         List<CommentHistory> commentHistoryList = commentsMapper.getCommentsList(userID);
         List<CommentDTO> commentsDtoList = new ArrayList<CommentDTO>();
@@ -74,7 +78,7 @@ public class CommentsServiceImpl implements ICommentsService {
         }
 
         for (CommentHistory commentHistory : commentHistoryList) {
-            commentsDtoList.add(convertEntityToDTO(commentHistory));
+            commentsDtoList.add(convertEntityToDTO(commentHistory, userTime));
         }
         // convert into dto and return to controller
         if (commentsDtoList.isEmpty()) {
@@ -91,7 +95,7 @@ public class CommentsServiceImpl implements ICommentsService {
      * @see com.ga.repository.ICommentsService#getCommentByCommentID(java.lang.String)
      */
     @Override
-    public CommentDTO getCommentByCommentID(String commentID) throws GAException {
+    public CommentDTO getCommentByCommentID(String commentID, Integer userTime) throws GAException {
         LOGGER.info("Get commemt by comment id called!!");
         int commentId = Integer.parseInt(commentID);
         CommentHistory commentHistory = commentsMapper.getCommentByCommentID(commentId);
@@ -100,7 +104,12 @@ public class CommentsServiceImpl implements ICommentsService {
             throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
         }
 
-        return convertEntityToDTO(commentHistory);
+        CommentDTO commentDTO = convertEntityToDTO(commentHistory, userTime);
+        if (commentDTO == null) {
+            throw new GAException(ErrorCodes.GA_DATA_NOT_FOUND);
+        }
+
+        return commentDTO;
     }
 
     /**
@@ -109,9 +118,18 @@ public class CommentsServiceImpl implements ICommentsService {
      * @param commentHistory the comment history
      * @return the comment dto
      */
-    private CommentDTO convertEntityToDTO(CommentHistory commentHistory) {
+    private CommentDTO convertEntityToDTO(CommentHistory commentHistory, Integer userTime) {
         CommentDTO commentDto = new CommentDTO();
-        commentDto.setCommentDate(commentHistory.getCommentDate());
+        Date d = commentHistory.getCommentDate();
+
+        TimeZone timeZone = TimeZone.getTimeZone("UTC");
+        Calendar calendar = Calendar.getInstance(timeZone);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+        simpleDateFormat.setTimeZone(timeZone);
+        calendar.setTime(d);
+        calendar.add(Calendar.MINUTE, userTime);
+
+        commentDto.setCommentDate(calendar.getTime());
         commentDto.setCommentId(commentHistory.getCommentId());
         commentDto.setCommentsDetail(commentHistory.getCommentsDetail());
         commentDto.setFilepath(commentHistory.getFilepath());

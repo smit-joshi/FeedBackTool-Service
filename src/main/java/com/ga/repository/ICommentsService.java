@@ -32,7 +32,7 @@ public interface ICommentsService {
      * @return the comments list
      * @throws GAException the GA exception
      */
-    List<CommentDTO> getCommentsList(String userID) throws GAException;
+    List<CommentDTO> getCommentsList(String userID,Integer time) throws GAException;
 
     /**
      * Gets the comment by comment id.
@@ -41,7 +41,7 @@ public interface ICommentsService {
      * @return the comment by comment id
      * @throws GAException the GA exception
      */
-    CommentDTO getCommentByCommentID(String commentID) throws GAException;
+    CommentDTO getCommentByCommentID(String commentID,Integer time) throws GAException;
 
     /**
      * Upload file.
@@ -51,5 +51,4 @@ public interface ICommentsService {
      * @throws GAException the GA exception
      */
     String uploadFile(CommonsMultipartFile file) throws GAException;
-
 }
